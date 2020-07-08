@@ -1,10 +1,22 @@
 ---
+resource_types:
+  - name: hangouts-resource
+    type: docker-image
+    source:
+      repository: itouoti12/concourse-hangouts-resource
+      tag: latest
+
 resources:
   - name: tutorial
     type: git
     source:
       uri: https://github.com/itouoti12/concourse-tutorial.git
       branch: develop
+  - name: hangouts
+    type: hangouts-resource
+    source:
+      webhook_url: https://chat.googleapis.com/v1/spaces/AAAAHBaGLsg/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=ZcYGlH9pQgQOcHMzQaoJge7zFayfUuoMtHa1rzxQaHw%3D
+      post_url: true
 
 jobs:
   - name: test
@@ -23,3 +35,8 @@ jobs:
             - name: tutorial
           run:
             path: tutorial/tutorials/miscellaneous/slack-notifications/test-sometimes-works.sh
+        on_failure:
+          put: hangouts
+          params:
+            message: Job Failed !
+            thread_name: 1mPz30W0k-4
